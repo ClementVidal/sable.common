@@ -1,0 +1,33 @@
+#
+# Specify acces to the required SDK
+#
+[SDKPathPC]
+DirectX: C:/Progra~1/Microsoft DirectX SDK (June 2010)
+PhysX: C:/Progra~1/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1
+FBX: C:/Progra~1/Autodesk/FBX/FBX SDK/2013.2
+Qt: C:/Qt/4.7.3
+AndroidNDKR7: D:/Perso/android-ndk-r7
+AndroidSDK: D:/Perso/android-sdk-windows
+NaClSDK: D:/Perso/GoogleNacl/nacl_sdk
+JDK: C:/Progra~1/Java/jdk1.6.0_23
+
+OpenAL: S:/Common/ThirdParty/OpenAL 1.1 SDK
+LibMad: S:/Common/ThirdParty/libmad-0.15.1b
+Angle: S:/Common/ThirdParty/Angle
+
+#
+# Tools path
+#
+[ToolsPath]
+Svn: C:/Program Files/CollabNet/Subversion Client
+InnoSetup: C:/Program Files/Inno Setup 5
+
+#
+# MSVC Related 
+# Note that SetupEnvironment.py will automaticly set the __msvcyear__ env var according to the value of MSVCVersion.
+# MSVCVersion:10 -> __msvcyear__: 2010
+# MSVCVersion:9 -> __msvcyear__: 2008
+# MSVCVersion:8 -> __msvcyear__: 2005
+#
+[MSVC]
+MSVCVersion: 9

@@ -1,10 +1,15 @@
 import sys
 import os
 import ConfigParser
-import _winreg
 import os, sys
 import optparse
+import platform
 
+
+if platform.system() == "Windows":
+    import _winreg
+elif platform.system() == "Linux":
+    pass
 
 #This method return the root directory of sable install
 def GetInstallDirectory() :
@@ -24,23 +29,47 @@ def SetEnvVar( name, value ) :
     elif len( value ) == 0 :
         print ( "Error, variable " + name + " does not have a right value")
     else :
-        path = ur'Environment'
-        reg = _winreg.ConnectRegistry(None, _winreg.HKEY_CURRENT_USER)
-        key = _winreg.OpenKey(reg, path, 0, _winreg.KEY_ALL_ACCESS)
-
-        try:
-            _winreg.DeleteValue( key, name )
+        if platform.system() == "Windows" :
+            path = ur'Environment'
+            reg = _winreg.ConnectRegistry(None, _winreg.HKEY_CURRENT_USER)
+            key = _winreg.OpenKey(reg, path, 0, _winreg.KEY_ALL_ACCESS)
+            
+            try:
+                _winreg.DeleteValue( key, name )
+                _winreg.FlushKey( key )
+                _winreg.CloseKey( key )
+            except WindowsError:
+                key = _winreg.CreateKey(reg, path )
+                reg = _winreg.ConnectRegistry(None, _winreg.HKEY_CURRENT_USER)
+                key = _winreg.OpenKey(reg, path, 0, _winreg.KEY_ALL_ACCESS)
+                _winreg.SetValueEx(key, name, 0, _winreg.REG_EXPAND_SZ, value)
             _winreg.FlushKey( key )
             _winreg.CloseKey( key )
-        except WindowsError:
-            key = _winreg.CreateKey(reg, path )
 
+        elif platform.system() == "Linux":
+
+            # update .profile file line by line and check if env var assignement is present or not in order to correctly update it
+            profileFilePath = os.path.expanduser("~") + "/.profile"
+            profileContent = ""
+
+            # Read file or create it if necessary
+            if os.path.exists( profileFilePath ) :
+                f = open( profileFilePath,"r" )
+                profileContent = f.readlines()
+                f.close()
+            else:
+                f = open( profileFilePath,"w+" )
+                f.close()
             
-        reg = _winreg.ConnectRegistry(None, _winreg.HKEY_CURRENT_USER)
-        key = _winreg.OpenKey(reg, path, 0, _winreg.KEY_ALL_ACCESS)
-        _winreg.SetValueEx(key, name, 0, _winreg.REG_EXPAND_SZ, value)
-        _winreg.FlushKey( key )
-        _winreg.CloseKey( key )
+            # Outptu file and update content 
+            f = open( profileFilePath, "w" )
+            for line in profileContent :
+                if line.find( name ) == -1:
+                    f.writelines( line )
+
+            f.writelines( "export "+name +"=\""+value+"\"\n" )
+            f.close()
+
             
                 
 def MountDrive() :
@@ -68,13 +97,16 @@ def SetEnvVars() :
             envVarName = "__" + str( option[0] ) + "__"
             if os.path.exists(  option[1] ) == False :
                 print("Error: Invalid path: "+ option[1] )
-                
+            
             SetEnvVar( envVarName, str( option[1] ) )
 
         # Tools path 
         options = config.items( "ToolsPath" )
         for option in options:
             envVarName = "__" + str( option[0] ) + "__"
+            if os.path.exists(  option[1] ) == False :
+                print("Error: Invalid path: "+ option[1] )
+
             SetEnvVar( envVarName, str( option[1] ) )
             
         # MSVC related 

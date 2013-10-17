@@ -5,13 +5,19 @@ import subprocess
 import tempfile
 import hashlib
 import pickle
-
+import platform
 import LibWorkspace
 import LibUtils
 
+
+if platform.system() != "Windows" :
+    print "Angle can be builded only on a Windows System with MSVC installed."
+    exit()
+
 # Return directly if VC is not installed
 if LibUtils.GetVCDir() == None :
-	exit()
+    print "Visual studio is apparently not instaled, failed to build Angle"
+    exit()
 	
 vcDir = os.path.normpath( LibUtils.GetVCDir()+ "/../Common7/IDE/devenv.exe"  )
 svnDir = os.path.normpath( os.environ["__Svn__"] + "/svn.exe" )
@@ -51,12 +57,12 @@ subprocess.call( cmdLine )
 print("libGLESv2 Release, OK")
 
 # Copy  directory
-if os.path.exists( "S:/Common/ThirdParty/Angle/include" ) :
-    LibUtils.SafeRemoveDir( "S:/Common/ThirdParty/Angle/include" )
+if os.path.exists( LibUtils.GetRoorDir()+"/Common/ThirdParty/Angle/include" ) :
+    LibUtils.SafeRemoveDir( LibUtils.GetRoorDir()+"/Common/ThirdParty/Angle/include" )
     
-if os.path.exists( "S:/Common/ThirdParty/Angle/Lib" ) :
-    LibUtils.SafeRemoveDir( "S:/Common/ThirdParty/Angle/lib" )
+if os.path.exists( LibUtils.GetRoorDir()+"/Common/ThirdParty/Angle/Lib" ) :
+    LibUtils.SafeRemoveDir( LibUtils.GetRoorDir()+"/Common/ThirdParty/Angle/lib" )
     
-shutil.copytree( "angleproject-read-only/include", "S:/Common/ThirdParty/Angle/include" )
-shutil.copytree( "angleproject-read-only/lib", "S:/Common/ThirdParty/Angle/lib" )
+shutil.copytree( "angleproject-read-only/include", LibUtils.GetRoorDir()+"/Common/ThirdParty/Angle/include" )
+shutil.copytree( "angleproject-read-only/lib", LibUtils.GetRoorDir()+"/Common/ThirdParty/Angle/lib" )
 print("Deployment OK")

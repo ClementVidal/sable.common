@@ -6,3 +6,7 @@
 # Configuration files
 ###########################
 *.conf
+
+# Temporary directory
+###########################
+ThirdParty/Installer/

@@ -81,6 +81,8 @@ def MountDrive() :
     os.system( "subst S: "+installDir )
     
 def SetEnvVars() :
+    # setup root directory env var
+    SetEnvVar( "__RootDir__", GetInstallDirectory() )
     # setup persistent environent variable
     SetEnvVar( "PYTHONPATH", GetScriptDirectory() )
     #Parse config system

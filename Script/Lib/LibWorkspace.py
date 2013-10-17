@@ -24,7 +24,7 @@ class CCodePackage(object) :
         self.Load( xmlNode )
         
     def Load( self, xmlObj ) :
-        self.Path = os.path.normpath( xmlObj.get("Path") )
+        self.Path = os.path.normpath( LibUtils.GetRootDir() + "/" + xmlObj.get("Path") )
         
         self.IsAgregated = True
         agregateString = xmlObj.get("IsAgregated", "True") ;
@@ -575,7 +575,7 @@ class CContext(object) :
     WorkspaceList = []
     
     def __init__(self) :
-        self.RecursiveLoadWorkspace( "S:/" )
+        self.RecursiveLoadWorkspace( LibUtils.GetRootDir() )
         for  wp in self.WorkspaceList :
             wp.Load()   
 

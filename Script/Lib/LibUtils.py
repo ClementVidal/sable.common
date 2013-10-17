@@ -1,7 +1,12 @@
 import os
 import time
 import shutil
-import _winreg
+import platform 
+
+if platform.system() == "Windows":
+    import _winreg
+elif platform.system() == "Linux":
+    pass
 
 #return the path to the visual studio compiler according to the version of MSVC specified in the SetupEnvironment.conf
 def GetVCDir( ) :
@@ -81,3 +86,6 @@ def SafeMakeDir( dirName ) :
             time.sleep(0.1)
         else:
             done =True
+
+def GetRootDir() :
+    return os.environ["__RootDir__"]

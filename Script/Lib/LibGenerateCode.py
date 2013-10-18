@@ -91,6 +91,7 @@ class CGeneratorHeader( CGenerator ) :
         guard = path.upper()
 
         guard = guard.replace( "\\", "_" )
+        guard = guard.replace( "/", "_" )
         guard = guard.replace( ":", "_" )
         
         return  guard + "_HEADER_ "

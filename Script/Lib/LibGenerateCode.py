@@ -247,7 +247,8 @@ class CGeneratorBuildFile( CGenerator ) :
         # if this path is a Stub impl directory, included it
         # if this path is NOT a Stub impl directory, and is an impl directory for the current platform include it
         # otherwise do note include it
-        if path.find( "\\Impl\\" ) != -1 :
+        print path
+        if path.find( "\\Impl\\" ) != -1 or path.find( "/Impl/" ) != -1 :
             if path.find( "Stub" ) != -1 :
                 return True
             else :

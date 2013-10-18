@@ -29,6 +29,9 @@ def SetEnvVar( name, value ) :
     elif len( value ) == 0 :
         print ( "Error, variable " + name + " does not have a right value")
     else :
+
+        name = name.upper()
+
         if platform.system() == "Windows" :
             path = ur'Environment'
             reg = _winreg.ConnectRegistry(None, _winreg.HKEY_CURRENT_USER)

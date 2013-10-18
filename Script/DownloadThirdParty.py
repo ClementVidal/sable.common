@@ -74,3 +74,6 @@ if platform.system() == "Windows" :
 elif platform.system() == "Linux" :   
     print "Linux platform detected." 
     DownloadHTTPFile( 'http://images.autodesk.com/adsk/files/fbx20141_fbxsdk_linux.tar.gz', installerPath+"fbx20141_fbxsdk_linux.tar.gz" )
+    DownloadHTTPFile( 'ftp://ftp.freedesktop.org/pub/mesa/current/MesaLib-9.2.1.tar.gz', installerPath+"MesaLib-9.2.1.tar.gz" )
+
+

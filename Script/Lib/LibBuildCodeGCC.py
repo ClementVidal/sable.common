@@ -79,7 +79,7 @@ class CBuilderGCC( CBuilderBase ) :
     def CompileTarget( self, config, target ) :
            
         # Build command line
-        cmdLine = "gcc "
+        cmdLine = "g++ "
         cmdLine += "-o"+self.GetCompiledTargetPath( target )+" "
         cmdLine += "-c "+target.GetPath()+" "
         
@@ -97,7 +97,7 @@ class CBuilderGCC( CBuilderBase ) :
 
         print cmdLine
         # run compiler
-        pid = subprocess.Popen( cmdLine )
+        pid = subprocess.Popen( cmdLine, shell=True )
         returnCode = pid.wait()
         
         # in case of successfull link

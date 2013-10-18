@@ -1,11 +1,11 @@
-#include <__PRJNAMESPACE__\View\ViewGame.h>
+#include <__PRJNAMESPACE__/View/ViewGame.h>
 
-#include <__PRJNAMESPACE__\Application\Renderer.h>
+#include <__PRJNAMESPACE__/Application/Renderer.h>
 
-#include <Sable\Graphics\Camera\Perspective.h>
-#include <Sable\Graphics\Scene\World.h>
-#include <Sable\Graphics\Debug\RenderPass.h>
-#include <Sable\Graphics\Common\Manager.h>
+#include <Sable/Graphics/Camera/Perspective.h>
+#include <Sable/Graphics/Scene/World.h>
+#include <Sable/Graphics/Debug/RenderPass.h>
+#include <Sable/Graphics/Common/Manager.h>
 
 using namespace __PRJNAMESPACE__;
 

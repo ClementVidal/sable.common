@@ -1,14 +1,14 @@
 #ifndef ___PRJNAMESPACE___APPLICATION_APPLICATION_
 #define ___PRJNAMESPACE___APPLICATION_APPLICATION_
 
-#include <Sable\Core\Common\DataTypes.h>
-#include <Sable\Core\ManagedObject\Ref.h>
-#include <Sable\Application\StandAlone.h>
-#include <Sable\Core\Event\Header.h>
-#include <Sable\Input\Keyboard\Event.h>
-#include <Sable\Input\Common\CameraController.h>
+#include <Sable/Core/Common/DataTypes.h>
+#include <Sable/Core/ManagedObject/Ref.h>
+#include <Sable/Application/StandAlone.h>
+#include <Sable/Core/Event/Header.h>
+#include <Sable/Input/Keyboard/Event.h>
+#include <Sable/Input/Common/CameraController.h>
 
-#include <Sable\Physic\Common\Header.h>
+#include <Sable/Physic/Common/Header.h>
 
 using namespace Sable;
 

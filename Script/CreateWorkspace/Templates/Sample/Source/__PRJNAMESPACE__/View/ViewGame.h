@@ -1,9 +1,9 @@
 #ifndef ___PRJNAMESPACE___VIEW_VIEWGAME_
 #define ___PRJNAMESPACE___VIEW_VIEWGAME_
 
-#include <Sable\Core\Common\DataTypes.h>
-#include <Sable\Core\ManagedObject\Ref.h>
-#include <Sable\Graphics\Scene\View.h>
+#include <Sable/Core/Common/DataTypes.h>
+#include <Sable/Core/ManagedObject/Ref.h>
+#include <Sable/Graphics/Scene/View.h>
 
 namespace __PRJNAMESPACE__ 
 {

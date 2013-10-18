@@ -1,8 +1,8 @@
-#include <__PRJNAMESPACE__\Application\Application.h>
+#include <__PRJNAMESPACE__/Application/Application.h>
 
-#include <Sable\Input\Keyboard\Header.h>
+#include <Sable/Input/Keyboard/Header.h>
 
-#include <__PRJNAMESPACE__\View\ViewGame.h>
+#include <__PRJNAMESPACE__/View/ViewGame.h>
 
 using namespace __PRJNAMESPACE__;
 

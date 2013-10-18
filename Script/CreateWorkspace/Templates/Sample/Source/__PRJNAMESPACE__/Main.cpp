@@ -1,4 +1,4 @@
-#include <__PRJNAMESPACE__\Application\Application.h>
+#include <__PRJNAMESPACE__/Application/Application.h>
 
 using namespace __PRJNAMESPACE__;
 

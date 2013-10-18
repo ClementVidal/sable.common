@@ -1,5 +1,5 @@
-#include <Sable\Core\Common\DataTypes.h>
-#include <Sable\Core\Common\Manager.h>
+#include <Sable/Core/Common/DataTypes.h>
+#include <Sable/Core/Common/Manager.h>
 
 #include <wx/cmdline.h>
 #include <wx/filename.h>

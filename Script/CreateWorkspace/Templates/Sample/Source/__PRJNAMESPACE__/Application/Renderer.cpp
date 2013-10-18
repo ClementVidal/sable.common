@@ -1,10 +1,10 @@
-#include <__PRJNAMESPACE__\Application\Renderer.h>
+#include <__PRJNAMESPACE__/Application/Renderer.h>
 
-#include <Sable\Graphics\RenderPass\Header.h>
-#include <Sable\Graphics\Debug\RenderPass.h>
-#include <Sable\Graphics\RenderTarget\Texture.h>
-#include <Sable\Gui\Common\RenderPass.h>
-#include <Sable\Graphics\Text\Font.h>
+#include <Sable/Graphics/RenderPass/Header.h>
+#include <Sable/Graphics/Debug/RenderPass.h>
+#include <Sable/Graphics/RenderTarget/Texture.h>
+#include <Sable/Gui/Common/RenderPass.h>
+#include <Sable/Graphics/Text/Font.h>
 
 using namespace __PRJNAMESPACE__;
 using namespace Sable;

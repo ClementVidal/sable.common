@@ -25,7 +25,7 @@ class CBuilderGCC( CBuilderBase ) :
     # Build a given target using a given config
     def GetCompiledTargetPath( self, target ) :
         targetname = os.path.splitext( os.path.basename( target.GetPath() ) )[0]
-        compiledTargetPath = target.GetBuildConfig().GetBuildDir()+"\\"+targetname+".o"
+        compiledTargetPath = target.GetBuildConfig().GetBuildDir()+"/"+targetname+".o"
         compiledTargetPath = os.path.normpath( compiledTargetPath )
         return compiledTargetPath
                 
@@ -84,8 +84,8 @@ class CBuilderGCC( CBuilderBase ) :
         cmdLine += "-c "+target.GetPath()+" "
         
         # Append Compiler flags
-        #for flag in config.GetCompilerFlags( ) :
-        #    cmdLine += flag+" "
+        for flag in config.GetCompilerFlags( ) :
+            cmdLine += flag+" "
             
         # Append PreProcessorDefines
         for preprocessorDefine in config.GetPreporcessorDefines( ) :

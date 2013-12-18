@@ -4,7 +4,7 @@ import ConfigParser
 import os, sys
 import optparse
 import platform
-
+import subprocess
 
 if platform.system() == "Windows":
     import _winreg
@@ -73,7 +73,7 @@ def SetEnvVar( name, value ) :
             f.writelines( "export "+name +"=\""+value+"\"\n" )
             f.close()
 
-            
+            subprocess.call("export "+name+"=\""+value+"\"\n", shell=True)
                 
 def MountDrive() :
     installDir = GetInstallDirectory()

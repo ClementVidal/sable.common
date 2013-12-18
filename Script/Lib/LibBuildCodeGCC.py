@@ -41,6 +41,8 @@ class CBuilderGCC( CBuilderBase ) :
     
         config = self.GetBuildConfig()
             
+        return 
+
         cmdLine = ""
         for flag in config.GetLinkerFlags( ) :
             cmdLine += flag+" "        

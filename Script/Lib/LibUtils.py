@@ -88,4 +88,4 @@ def SafeMakeDir( dirName ) :
             done =True
 
 def GetRootDir() :
-    return os.environ["__RootDir__"]
+    return os.environ["__ROOTDIR__"]

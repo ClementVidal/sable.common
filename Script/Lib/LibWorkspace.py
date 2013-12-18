@@ -18,7 +18,7 @@ class CCodePackage(object) :
     IsAgregated = True
     
     def __init__(self, buildConfig, xmlNode):
-        self.ExcludeList = []
+        self.ExcludedDirList = []
         self.Path = ""
         self.BuildConfig = buildConfig
         self.Load( xmlNode )
@@ -35,7 +35,9 @@ class CCodePackage(object) :
         # path MUST be normalized in order to transform / to \ and to get consistent file naming
         excludedDirList = xmlObj.findall( "ExcludedDir" )
         for excludedDir in excludedDirList :
-            self.ExcludedDirList.append( os.path.abspath( excludedDir.get( "Path" ) ) )           
+            fullPath = os.path.normpath( LibUtils.GetRootDir() + "/" + excludedDir.get( "Path" ) )
+            
+            self.ExcludedDirList.append( fullPath ) 
             
         return True
         

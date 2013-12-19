@@ -112,7 +112,7 @@ class CBuilderBase(object) :
     #   2- Check the md5 sum of each fils against the ones stored in the database
     def IsPackageUpToDate( self, package ) :
        
-        for buildTarget in package.GetBuildTargetList() :
+        for buildTarget in package.GetBuildTargetList( self.BuildConfig ) :
             if os.path.exists( self.GetCompiledTargetPath( buildTarget ) ) == False :
                 return False
                 
@@ -130,7 +130,7 @@ class CBuilderBase(object) :
         list = []
 
         for package in self.BuildConfig.GetCodePackageListRecursive() :
-            for buildTarget in package.GetBuildTargetList() :
+            for buildTarget in package.GetBuildTargetList( self.BuildConfig ) :
                 list.append( self.GetCompiledTargetPath( buildTarget ) )
          
         return list
@@ -151,8 +151,8 @@ class CBuilderBase(object) :
     # Build each target in the package
     def CompilePackage( self, package ) :
         compileOk = True
-        for target in package.GetBuildTargetList() :
-            if self.CompileTarget( package.GetBuildConfig(), target ) == False :
+        for target in package.GetBuildTargetList( self.BuildConfig ) :
+            if self.CompileTarget( self.BuildConfig, target ) == False :
                 compileOk = False
                 
         return compileOk 
@@ -172,7 +172,7 @@ class CBuilderBase(object) :
     def CleanConfig( self, config ) :
     
         #Remove all targets
-        for target in config.GetBuildTargetList():
+        for target in config.GetBuildTargetList( ):
             compiledtargetPath = self.GetCompiledTargetPath( target )
             if os.path.exists( compiledtargetPath ) :
                 os.remove( compiledtargetPath )

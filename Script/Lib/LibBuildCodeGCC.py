@@ -40,7 +40,7 @@ class CBuilderGCC( CBuilderBase ) :
     def LinkConfig( self ) :
     
         config = self.GetBuildConfig()
-            
+
         return 
 
         cmdLine = ""
@@ -79,11 +79,21 @@ class CBuilderGCC( CBuilderBase ) :
         
     # Build a given target using a given config
     def CompileTarget( self, config, target ) :
+
+        compilerPath = "g++"
+        if config.GetToolChain() == "NaCl" :
+            if os.environ.has_key( "__NACLSDK__" ) :
+                naclSDKPath = os.environ.get("__NACLSDK__")
+            else :
+                print "Compiling NaCl config, but __NACLSDK__ is not set... failed to compile"
+                return False
+
+            compilerPath = os.path.normpath( naclSDKPath + "/pepper_31/toolchain/linux_pnacl/host_x86_32/bin/clang++" )
            
         # Build command line
-        cmdLine = "g++ "
-        cmdLine += "-o"+self.GetCompiledTargetPath( target )+" "
-        cmdLine += "-c "+target.GetPath()+" "
+        cmdLine = compilerPath
+        cmdLine += " -o"+self.GetCompiledTargetPath( target )+" "
+        cmdLine += " -c "+target.GetPath()+" "
         
         # Append Compiler flags
         for flag in config.GetCompilerFlags( ) :
@@ -99,6 +109,7 @@ class CBuilderGCC( CBuilderBase ) :
 
         print cmdLine
         # run compiler
+
         pid = subprocess.Popen( cmdLine, shell=True )
         returnCode = pid.wait()
         

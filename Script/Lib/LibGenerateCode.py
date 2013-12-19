@@ -23,13 +23,13 @@ class CGenerator(object) :
     def ProcessFile( self, path ) :
         None
         
-    def BeginCodePackage( self, package ) :
+    def BeginCodePackage( self, package, buildConfig ) :
         None
 
-    def EndCodePackage( self, package ) :
+    def EndCodePackage( self, package, buildConfig ) :
         None
 
-    def BeginDirectory( self, package, path ) :
+    def BeginDirectory( self, package, buildConfig, path ) :
         return True
 
     def EndDirectory( self, path ) :
@@ -38,10 +38,10 @@ class CGenerator(object) :
     def Initialize( self ) :
         None
         
-    def RecursiveParseDirectory( self, package, dir ) :
+    def RecursiveParseDirectory( self, package, buildConfig, dir ) :
         path = ""
         
-        if self.BeginDirectory( package, dir ) :
+        if self.BeginDirectory( package, buildConfig, dir ) :
 
             for subName in os.listdir( dir ) :
                 subPath = os.path.abspath( os.path.join( dir, subName ) )
@@ -55,7 +55,7 @@ class CGenerator(object) :
                 if os.path.isfile( subPath ) == False :
                 
                     if LibUtils.IsSvnDir( subName ) == False and subName != "CodeBuilder":
-                        self.RecursiveParseDirectory( package, subPath  )
+                        self.RecursiveParseDirectory( package, buildConfig, subPath  )
                     
     def Generate( self ):
 
@@ -70,11 +70,11 @@ class CGenerator(object) :
                     # otherwise, cpp file in the package will be compiled independently
                     if package.GetIsAgregated() == True :
                     
-                        self.BeginCodePackage( package )
+                        self.BeginCodePackage( package, buildConfig )
                             
-                        self.RecursiveParseDirectory( package, package.Path )
+                        self.RecursiveParseDirectory( package, buildConfig, package.Path )
                         
-                        self.EndCodePackage( package )  
+                        self.EndCodePackage( package, buildConfig )  
                     
             
 """
@@ -100,7 +100,7 @@ class CGeneratorHeader( CGenerator ) :
         if os.path.splitext( path )[1] == ".h" :
             self.FileList.append( path )
 
-    def BeginDirectory( self, package, path ) :
+    def BeginDirectory( self, package, buildConfig, path ) :
         self.FileList = []
         return True
 
@@ -159,7 +159,7 @@ class CGeneratorQtMocFile( CGenerator ) :
             if fileContent.find("Q_OBJECT") != -1 :
                 self.FileList.append( path )
 
-    def BeginDirectory( self, package, path ) :
+    def BeginDirectory( self, package, buildConfig,  path ) :
         self.FileList = []
         return True
 
@@ -202,21 +202,21 @@ class CGeneratorBuildFile( CGenerator ) :
         shutil.rmtree( self.Workspace.GetBuildFileDir(), True )        
         LibUtils.SafeMakeDir( self.Workspace.GetBuildFileDir() )
         
-    def BeginCodePackage( self, package ) :
+    def BeginCodePackage( self, package, buildConfig ) :
         
         # If this package is agregated, then prepare a fresh new directory to store the build file
         if package.GetIsAgregated() == True :
-            packageFileDir = os.path.dirname( package.GetBuildTargetList()[0].GetPath() )
+            packageFileDir = os.path.dirname( package.GetBuildTargetList( buildConfig )[0].GetPath() )
             if os.path.exists( packageFileDir ) == False :
                 os.makedirs( packageFileDir )
                 
         self.FileList = []
         
-    def EndCodePackage( self, package ) :
+    def EndCodePackage( self, package, buildConfig ) :
     
         # If this package is agregated, then prepare a fresh new directory to store the build file
         if package.GetIsAgregated() == True :
-            buildFileName = package.GetBuildTargetList()[0].GetPath()
+            buildFileName = package.GetBuildTargetList( buildConfig )[0].GetPath()
             
             if os.path.exists( buildFileName ) == True :
                 os.remove( buildFileName )
@@ -234,7 +234,7 @@ class CGeneratorBuildFile( CGenerator ) :
             file.write( u"\n" )
             file.close() 
 
-    def BeginDirectory( self, package, path ) :
+    def BeginDirectory( self, package, buildConfig, path ) :
     
         # no need to go further for any non agregated package
         if package.GetIsAgregated() == False:
@@ -251,7 +251,7 @@ class CGeneratorBuildFile( CGenerator ) :
             if path.find( "Stub" ) != -1 :
                 return True
             else :
-                for impl in package.GetBuildConfig().GetImplTypes() :
+                for impl in buildConfig.GetImplTypes() :
                     if path.find( impl ) != -1 :
                         return True
                 return False

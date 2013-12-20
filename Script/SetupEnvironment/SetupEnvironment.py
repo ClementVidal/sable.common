@@ -26,8 +26,6 @@ def GetScriptDirectory() :
 def SetEnvVar( name, value ) :
     if len( name ) == 0 :
         print ( u'Error, variable' + name + " does not exist in configuration file")
-    elif len( value ) == 0 :
-        print ( "Error, variable " + name + " does not have a right value")
     else :
 
         name = name.upper()
@@ -76,6 +74,9 @@ def SetEnvVar( name, value ) :
             subprocess.call("export "+name+"=\""+value+"\"\n", shell=True)
                 
 def MountDrive() :
+    if platform.system() != "Windows" :
+        return
+
     installDir = GetInstallDirectory()
     # Mount S drive
     if os.path.exists( "s:/" ) :
@@ -100,19 +101,24 @@ def SetEnvVars() :
         options = config.items( "SDKPathPC" )
         for option in options:
             envVarName = "__" + str( option[0] ) + "__"
-            if os.path.exists(  option[1] ) == False :
-                print("Error: Invalid path: "+ option[1] )
+
+            path = os.path.expanduser( option[1] )
+            if len(path) != 0 and os.path.exists( path ) == False :
+                print("Error: Invalid path: "+ path )
             
-            SetEnvVar( envVarName, str( option[1] ) )
+            SetEnvVar( envVarName, str( path ) )
 
         # Tools path 
         options = config.items( "ToolsPath" )
         for option in options:
             envVarName = "__" + str( option[0] ) + "__"
-            if os.path.exists(  option[1] ) == False :
-                print("Error: Invalid path: "+ option[1] )
 
-            SetEnvVar( envVarName, str( option[1] ) )
+
+            path = os.path.expanduser( option[1] )
+            if len(path) != 0 and os.path.exists( path ) == False :
+                print("Error: Invalid path: "+ path )
+            
+            SetEnvVar( envVarName, str( path ) )
             
         # MSVC related 
         options = config.items( "MSVC" )

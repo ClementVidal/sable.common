@@ -394,7 +394,9 @@ class CBuildOptions(object) :
             strList = xmlNode.text.split( )
             # Subtitue toute les variables d'environement
             for str in strList :
-                outputlist.append( os.path.expandvars( str ) )
+                item = os.path.expandvars( str )
+                if len ( item ) > 0:
+                    outputlist.append( os.path.expandvars( str ) )
                 
         return outputlist
         

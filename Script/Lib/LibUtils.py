@@ -2,6 +2,8 @@ import os
 import time
 import shutil
 import platform 
+import urllib2
+import sys
 
 if platform.system() == "Windows":
     import _winreg
@@ -89,3 +91,48 @@ def SafeMakeDir( dirName ) :
 
 def GetRootDir() :
     return os.environ["__ROOTDIR__"]
+
+
+def DownloadHTTPFile( fileUrl, localFilePath ) :
+    if localFilePath == None :
+        localFilePath = os.path.basename( fileUrl )
+
+    # Do HTTP request
+    try :
+        urlfile = urllib2.urlopen( fileUrl )
+    except urllib2.URLError as e:
+        print "Download from: " + fileUrl + "failed.\nReason are:" + str( e.reason )
+        return    
+    
+    totalFileSize = int (urlfile.info()['Content-Length'] )
+    
+    # Check if file already exist
+    if os.path.exists(localFilePath) and os.path.getsize(localFilePath) == totalFileSize :
+        print "File: "+localFilePath+" already exist, download skipped..."
+        return
+     
+    localFile = open(localFilePath, 'wb')
+
+    print "Downloading: \n\tFrom: " + fileUrl + "\n\tTo: " + localFilePath
+    
+    #Download file
+    data_list = []
+    chunk = 4096*10
+    size = 0
+    while 1:
+
+        sys.stdout.flush()
+
+        data = urlfile.read(chunk)
+        if not data:
+            print " OK !"
+            break
+        size += len( data )
+        localFile.write(data)
+        
+        progress = float( size ) / totalFileSize * 100.0        
+        sys.stdout.write("\r[%f%%]" %progress )
+        
+        sys.stdout.flush()
+        
+    localFile.close()

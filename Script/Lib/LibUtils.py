@@ -10,6 +10,9 @@ if platform.system() == "Windows":
 elif platform.system() == "Linux":
     pass
 
+def GetRootDir() :
+    return os.environ["__ROOTDIR__"]
+
 #return the path to the visual studio compiler according to the version of MSVC specified in the SetupEnvironment.conf
 def GetVCDir( ) :
 
@@ -45,7 +48,7 @@ def IsSvnDir( dir ) :
     
 #This method return the root directory of sable install
 def GetScriptDirectory() :
-    path = os.path.normpath( "S:/Common/Script" )
+    path = os.path.normpath( GetRootDir() + "/Common/Script" )
     return path
     
 def SafeRemoveFile( filename ) :
@@ -83,14 +86,12 @@ def SafeMakeDir( dirName ) :
     done = False
     while done == False:
         try:
-            os.mkdir( dirName )
+            os.makedirs( dirName )
         except OSError:
             time.sleep(0.1)
         else:
             done =True
 
-def GetRootDir() :
-    return os.environ["__ROOTDIR__"]
 
 
 def DownloadHTTPFile( fileUrl, localFilePath ) :
@@ -110,6 +111,9 @@ def DownloadHTTPFile( fileUrl, localFilePath ) :
     if os.path.exists(localFilePath) and os.path.getsize(localFilePath) == totalFileSize :
         print "File: "+localFilePath+" already exist, download skipped..."
         return
+
+    if os.path.exists(localFilePath) and os.path.getsize(localFilePath) != totalFileSize :
+        print "File: "+localFilePath+" already exist, but have a different size..."
      
     localFile = open(localFilePath, 'wb')
 

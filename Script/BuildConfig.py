@@ -3,7 +3,7 @@ import optparse
 
 import LibWorkspace
 import LibBuildCode
-
+import LibGenerateCode
 
 def StartInteractive(  ) :
     workspaceName = raw_input( "Enter workspace name: " )
@@ -47,6 +47,7 @@ def StartInteractive(  ) :
     print( "\t1 - Clean" )
     print( "\t2 - Build" )
     print( "\t3 - Rebuild" )
+    print( "\t4 - Generate Build Code" )
     actionTypeId = raw_input( "\tAction : " )
     
     # Build config
@@ -62,6 +63,9 @@ def StartInteractive(  ) :
             builder.Build()
         elif actionTypeId == "3" :
             builder.ReBuild()  
+        elif actionTypeId == "4" :
+            LibGenerateCode.GenerateHeader( workspace )
+            LibGenerateCode.GenerateBuildFile( workspace )
         else:
             print( "Error: Invalid action type")
             exit()
@@ -71,6 +75,7 @@ def StartFromCommandLine( argv ) :
     parser = optparse.OptionParser(usage=usage)
     parser.add_option(u"-c", u"--clean", help="Clean Project", action="store_true",  dest="Clean")
     parser.add_option(u"-r", u"--rebuild", help="Rebuild Project", action="store_true",  dest="Rebuild")
+    parser.add_option(u"-g", u"--generate", help="Generate Build code", action="store_true",  dest="Generate")
     (options, args) = parser.parse_args()
     
     if len( args ) != 3 :
@@ -101,6 +106,9 @@ def StartFromCommandLine( argv ) :
         builder.Clean()
     elif options.Rebuild == True :
         builder.ReBuild()
+    elif options.Generate == True:
+        LibGenerateCode.GenerateHeader( workspace )
+        LibGenerateCode.GenerateBuildFile( workspace )        
     else :
         builder.Build()    
     

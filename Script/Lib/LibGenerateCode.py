@@ -6,7 +6,7 @@ from io import open
 
 import LibWorkspace
 import LibUtils
-        
+import LibLog        
 """
 Base interface for generator classes
 """
@@ -60,6 +60,7 @@ class CGenerator(object) :
     def Generate( self ):
 
         self.PrintDesc()
+
         self.Initialize()
 
         for project in self.Workspace.GetProjectList() :
@@ -68,8 +69,10 @@ class CGenerator(object) :
                 
                     # Create code package buildfile only if it's content is agregated.
                     # otherwise, cpp file in the package will be compiled independently
+                    
                     if package.GetIsAgregated() == True :
                     
+
                         self.BeginCodePackage( package, buildConfig )
                             
                         self.RecursiveParseDirectory( package, buildConfig, package.Path )
@@ -85,7 +88,7 @@ class CGeneratorHeader( CGenerator ) :
     FileList = []
     
     def PrintDesc( self ) :
-        print "Generating header files for: " + self.Workspace.Name
+        LibLog.Info( "Generating header files for: " + self.Workspace.Name )
         
     def BuildPreprocessorGuards( self, path ) :
         guard = path.upper()
@@ -146,7 +149,7 @@ class CGeneratorQtMocFile( CGenerator ) :
     FileList = []
         
     def PrintDesc( self ) :
-        print "Generating Qt Moc files for: " + self.Workspace.Name
+        LibLog.Info( "Generating Qt Moc files for: " + self.Workspace.Name )
         
     def ProcessFile( self, path ) :
         if os.path.splitext( path )[1] == ".h" :
@@ -192,23 +195,32 @@ class CGeneratorBuildFile( CGenerator ) :
     BuildFileDir = ""
     
     def PrintDesc( self ) :
-        print "Generating build files for: " + self.Workspace.Name
+        LibLog.Info( "Generating build files for: " + self.Workspace.Name )
 
     def ProcessFile( self, path ) :
         if os.path.splitext( path )[1] == ".cpp" or os.path.splitext( path )[1] == ".c":
             self.FileList.append( path )
             
     def Initialize( self ) :   
-        shutil.rmtree( self.Workspace.GetBuildFileDir(), True )        
-        LibUtils.SafeMakeDir( self.Workspace.GetBuildFileDir() )
+        buildFileDir = self.Workspace.GetBuildFileDir()
+
+        if os.path.exists( buildFileDir ) == True :
+            shutil.rmtree( buildFileDir, True )        
+
+        LibUtils.SafeMakeDir( buildFileDir )
         
     def BeginCodePackage( self, package, buildConfig ) :
-        
+    
         # If this package is agregated, then prepare a fresh new directory to store the build file
         if package.GetIsAgregated() == True :
-            packageFileDir = os.path.dirname( package.GetBuildTargetList( buildConfig )[0].GetPath() )
-            if os.path.exists( packageFileDir ) == False :
-                os.makedirs( packageFileDir )
+
+            
+            if len( package.GetBuildTargetList( buildConfig ) ) == 0 :
+                LogLib.Warning("CodePackage: "+self.GetName()+" does not contain any build target in config: "+buildConfig);
+            else :
+                packageFileDir = os.path.dirname( package.GetBuildTargetList( buildConfig )[0].GetPath() )
+                if os.path.exists( packageFileDir ) == False :
+                    os.makedirs( packageFileDir )
                 
         self.FileList = []
         
@@ -273,6 +285,8 @@ def GenerateHeader( workspace ):
 Generate build code
 """
 def GenerateBuildFile( workspace ):
+
+    LibLog.Info( "BuildFile directory: "+workspace.GetBuildFileDir() )
     for wp in workspace.GetDependentWorkspace() :
         g = CGeneratorBuildFile( wp )
         g.Generate()

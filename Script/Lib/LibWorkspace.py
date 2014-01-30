@@ -5,7 +5,7 @@ from xml.etree.ElementTree import ElementTree
 from xml.parsers.expat import ExpatError
 
 import LibUtils
-
+import LibLog
 
 # A Code Package represent a directory of source code file.
 # a code package can be agregated meaining that a separated BuildFile will be created
@@ -23,7 +23,10 @@ class CCodePackage(object) :
         self.Load( xmlNode )
         
     def Load( self, xmlObj ) :
-        self.Path = os.path.normpath( LibUtils.GetRootDir() + "/" + xmlObj.get("Path") )
+        self.Path = os.path.normpath( LibUtils.GetRootDir() + "/" + xmlObj.get("Path") + "/" )
+        if self.GetIsValidPath() == False :
+            LibLog.Error("Invalid code package path: "+self.Path)
+            return False
         
         self.IsAgregated = True
         agregateString = xmlObj.get("IsAgregated", "True") ;
@@ -101,11 +104,23 @@ class CCodePackage(object) :
     def GetProject( self ) :
         return  self.Project 
         
+
+    def GetIsValidPath( self ):
+
+        if os.path.exists( self.Path ) == False :
+            return False
+
+        name = os.path.normpath( self.Path ).partition( "Source" )[2]
+        if len( name ) == 0:
+            return False
+
+        return True
+
     def GetName( self ) :
         name = os.path.normpath( self.Path ).partition( "Source" )[2]
         if name == "" :
-            print("Error: invalid code package path: "+self.Path )
-            exit()
+            Log.Error("Error: Invalid package path : "+self.Path )
+            return ""
         
         name = name.strip( "\\/" )
         name = name.replace( "/", "_" )
@@ -136,7 +151,8 @@ class CCodePackageSet( object ) :
         xmlCodePackages = xmlObj.findall( "CodePackage" )
         for xmlCodePackage in xmlCodePackages :
             codePackage = CCodePackage( self.Project, xmlCodePackage )
-            self.CodePackageList.append( codePackage ) 
+            if codePackage.Load( xmlCodePackage ) == True :
+                self.CodePackageList.append( codePackage ) 
             
         return True
 
@@ -321,6 +337,7 @@ class CProject(object) :
         self.Name = ""
         self.Workspace = workspace
         self.BuildConfigList = []
+        self.CodePackageSetList = []
         self.BuildType = ""
             
     def GetBuildConfig( self, name ) :
@@ -355,16 +372,32 @@ class CProject(object) :
     def Load( self, xmlObj ) :
         self.Name = xmlObj.get("Name")
         self.BuildType = xmlObj.get("BuildType")
+        self.CodePackageSetList = []
+        self.BuildConfigList = []
 
         xmlCodePackageSetList = xmlObj.findall( "CodePackageSet" )
         for xmlCodePackageSet in xmlCodePackageSetList :
             codePackageSet = CCodePackageSet( self, xmlCodePackageSet )
-            self.CodePackageSetList.append( codePackageSet )
+            isValid = True
+            for existingCPS in self.CodePackageSetList :
+                if existingCPS.GetName() == codePackageSet.GetName() :
+                    isValid = False
+                    LibLog.Error("A code package set with this name already exists: "+existingCPS.GetName() )
+                    
+            if isValid :        
+                self.CodePackageSetList.append( codePackageSet )
             
         xmlBuildConfigList = xmlObj.findall( "BuildConfig" )
         for xmlBuildConfig in xmlBuildConfigList :
             config = CBuildConfig( self, xmlBuildConfig )
-            self.BuildConfigList.append( config )
+            isValid = True
+            for existingConfig in self.BuildConfigList :
+                if existingConfig.GetName() == config.GetName() :
+                    isValid = False
+                    LibLog.Error("A build config with this name already exists: "+existingconfig.GetName() )
+
+            if isValid : 
+                self.BuildConfigList.append( config )
             
         return True
 
@@ -612,7 +645,7 @@ class CBuildConfig(object) :
             buildOptionsName = xmlBuildOptions.get( "Name" )
             buildOptions = self.GetWorkspace().GetBuildOptions( buildOptionsName )
             if buildOptions == None :
-                print("Error: The specified build options does not exist: "+buildOptionsName)
+                Log.Error("Error: The specified build options does not exist: "+buildOptionsName)
                 exit()
                 
             self.BuildOptionsList.append( buildOptions )
@@ -620,7 +653,11 @@ class CBuildConfig(object) :
         xmlCodePackageSetList = xmlRoot.findall( "CodePackageSet" )
         for xmlCodePackageSet in xmlCodePackageSetList :
             codePackageSetName = xmlCodePackageSet.get("Name")
-            self.CodePackageSetList.append( self.GetProject().GetCodePackageSet( codePackageSetName ))
+            codePackageSet = self.GetProject().GetCodePackageSet( codePackageSetName )
+            if codePackageSet == None:
+                Log.Error( "The specified CodePackageSet does not exists: "+codePackageSetName)
+            else:
+                self.CodePackageSetList.append( codePackageSet )
         
         xmlDependencyList = xmlRoot.findall( "Dependency" )
         for xmlDependency in xmlDependencyList :

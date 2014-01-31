@@ -8,6 +8,7 @@ import pickle
 
 import LibWorkspace
 import LibUtils
+import LibLog
 
 # base class for any builder
 class CBuilderBase(object) :
@@ -194,20 +195,20 @@ class CBuilderBase(object) :
     def Build( self ):
         compileOk = True
         
-        print( "Info: Compiling "+self.GetBuildConfig().GetName() )
+        LibLog.Info( "Compiling "+self.GetBuildConfig().GetName() )
         if self.CompileDependency( self.GetBuildConfig() ) == False :
             compileOk = False
         if self.CompileConfig( self.GetBuildConfig() ) == False :
             compileOk = False     
 
         if compileOk == True :
-            print( "Info: Linking "+self.GetBuildConfig().GetName() )
+            LibLog.Info( "Linking "+self.GetBuildConfig().GetName() )
             if self.LinkConfig( ) == True :
-                print( "Info: Deploying "+self.GetBuildConfig().GetName() )
+                LibLog.Info( "Deploying "+self.GetBuildConfig().GetName() )
                 self.DeployBinFiles( )
         
     def Clean( self ) :
-        print( "Info: Cleaning "+self.GetBuildConfig().GetName() )
+        LibLog.Info( "Cleaning "+self.GetBuildConfig().GetName() )
         self.CleanConfigRecursive( self.GetBuildConfig() )
         self.CleanBinFiles( )
         self.CleanHashDataBaseFile( )

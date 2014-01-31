@@ -8,6 +8,7 @@ import pickle
 
 import LibWorkspace
 import LibUtils
+import LibLog
 from LibBuildCodeBase import CBuilderBase
 
 class CBuilderGCC( CBuilderBase ) :
@@ -24,9 +25,7 @@ class CBuilderGCC( CBuilderBase ) :
         
     # Build a given target using a given config
     def GetCompiledTargetPath( self, target ) :
-        targetname = os.path.splitext( os.path.basename( target.GetPath() ) )[0]
-        compiledTargetPath = target.GetBuildConfig().GetBuildDir()+"/"+targetname+".o"
-        compiledTargetPath = os.path.normpath( compiledTargetPath )
+        compiledTargetPath =  target.GetCompiledObjectPath( "o" )
         return compiledTargetPath
                 
     def GetExeName( self ) : 
@@ -41,38 +40,30 @@ class CBuilderGCC( CBuilderBase ) :
     
         config = self.GetBuildConfig()
 
-        return 
-
         cmdLine = ""
         for flag in config.GetLinkerFlags( ) :
             cmdLine += flag+" "        
 
-        cmdLine += "/OUT:"+self.GetExePath()+" "
+        cmdLine += "-o "+self.GetExePath()+" "
         
         for libPath in config.GetLibPath( ) :
-            cmdLine += "\"/LIBPATH:"+libPath+"\" "
+            cmdLine += "-L"+libPath+" "
             
         for lib in config.GetLibs( ) :
-            cmdLine += lib+" "
+            cmdLine += "-l"+lib+" "
             
         for compiledTarget in self.GetCompiledTargetPathList( config ) :
             cmdLine += compiledTarget+" "
         
-        # Create a temporary fil to store linker command        
-        cmdFile = tempfile.NamedTemporaryFile( delete=False )
-        cmdFile.write( cmdLine )
-        cmdFile.close()
-        
         # run linker
-        cmdLine = "link.exe @"+cmdFile.name;
-        pid = subprocess.Popen( cmdLine )
+        cmdLine = "gcc "+cmdLine
+        
+        print cmdLine
+        pid = subprocess.Popen( cmdLine, shell=True )
         returnCode = pid.wait()
                 
-        os.remove( cmdFile.name )
-        
         # in case of successfull link
         if returnCode == 0:
-            self.EmbedManifest( )
             return True
             
         return False
@@ -80,7 +71,7 @@ class CBuilderGCC( CBuilderBase ) :
     # Build a given target using a given config
     def CompileTarget( self, config, target ) :
 
-        compilerPath = "g++"
+        compilerPath = "gcc"
         if config.GetToolChain() == "NaCl" :
             if os.environ.has_key( "__NACLSDK__" ) :
                 naclSDKPath = os.environ.get("__NACLSDK__")
@@ -107,7 +98,8 @@ class CBuilderGCC( CBuilderBase ) :
         for includePath in config.GetIncludePath( ) :
             cmdLine += "\"-I"+includePath+"\" "
 
-        print cmdLine
+        LibLog.Info( cmdLine )
+
         # run compiler
 
         pid = subprocess.Popen( cmdLine, shell=True )

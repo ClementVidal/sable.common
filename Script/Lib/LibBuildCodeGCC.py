@@ -58,7 +58,6 @@ class CBuilderGCC( CBuilderBase ) :
         # run linker
         cmdLine = "gcc "+cmdLine
         
-        print cmdLine
         pid = subprocess.Popen( cmdLine, shell=True )
         returnCode = pid.wait()
                 

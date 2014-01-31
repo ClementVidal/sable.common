@@ -473,7 +473,6 @@ class CBuildOptions(object) :
             
         # parse libs
         self.Libs = self.LoadList( xmlRoot.findall( "Libs" ) )
-        print "Libs: "+str(self.Libs)
 
         # parse linker flags
         self.LinkerFlags = self.LoadList( xmlRoot.findall( "LinkerFlags" ) )
@@ -535,7 +534,7 @@ class CBuildConfig(object) :
             list += childConfig.GetCompilerFlags( )        
             
         for buildOptions in self.GetBuildOptionsList() :
-            list += list + buildOptions.GetCompilerFlags()
+            list += buildOptions.GetCompilerFlags()
         return list
 
     def GetLinkerFlags( self ) :
@@ -544,7 +543,7 @@ class CBuildConfig(object) :
             list += childConfig.GetLinkerFlags( )      
             
         for buildOptions in self.GetBuildOptionsList() :
-            list += list + buildOptions.GetLinkerFlags()
+            list += buildOptions.GetLinkerFlags()
         return list
         
     def GetPreporcessorDefines( self  ) :

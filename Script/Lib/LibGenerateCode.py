@@ -237,6 +237,7 @@ class CGeneratorBuildFile( CGenerator ) :
                 
             file = open( buildFileName, "w+t" ) 
 
+            file.write( u"// Auto generated build files\n\n")
             if os.path.exists( headerFileName ) == True :
                 file.write( u"#include \"" + headerFileName + "\"\n" )
 

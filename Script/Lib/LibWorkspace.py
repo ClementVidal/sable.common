@@ -224,14 +224,14 @@ class CWorkspace(object) :
         return 1
 
     def GetDependentWorkspace( self ) :
-        list = []
+        workspaceList = []
         for project in self.GetProjectList() :
             for buildConfig in project.GetBuildConfigList() :
                 for childConfig in buildConfig.GetDependencyList() :
                     if childConfig.GetWorkspace() not in list :
-                        list.append( childConfig.GetWorkspace() )
+                        workspaceList.append( childConfig.GetWorkspace() )
                         
-        return list;
+        return workspaceList
         
     # return s:/MyPrj/Source/
     def GetSourceFileDir( self ):
@@ -406,7 +406,7 @@ class CProject(object) :
             for existingConfig in self.BuildConfigList :
                 if existingConfig.GetName() == config.GetName() :
                     isValid = False
-                    LibLog.Error("A build config with this name already exists: "+existingconfig.GetName() )
+                    LibLog.Error("A build config with this name already exists: "+existingConfig.GetName() )
 
             if isValid : 
                 self.BuildConfigList.append( config )
@@ -438,10 +438,10 @@ class CBuildOptions(object) :
             # decoupe la chaine la ou il y a des espaces
             strList = xmlNode.text.split( )
             # Subtitue toute les variables d'environement
-            for str in strList :
-                item = os.path.expandvars( str )
+            for string in strList :
+                item = os.path.expandvars( string )
                 if len ( item ) > 0:
-                    outputlist.append( os.path.expandvars( str ) )
+                    outputlist.append( os.path.expandvars( string ) )
                 
         return outputlist
         
@@ -502,49 +502,49 @@ class CBuildConfig(object) :
         self.Load(xmlRoot)
 
     def GetIncludePath( self ) :
-        list = []
+        configList = []
         for childConfig in self.GetDependencyList() :
-            list += childConfig.GetIncludePath( )        
+            configList += childConfig.GetIncludePath( )        
             
         for buildOptions in self.GetBuildOptionsList() :
-            list += buildOptions.GetIncludePath()
-        return list
+            configList += buildOptions.GetIncludePath()
+        return configList
 
     def GetLibPath( self ) :
-        list = []
+        libPathList = []
         for childConfig in self.GetDependencyList() :
-            list += childConfig.GetLibPath( )        
+            libPathList += childConfig.GetLibPath( )        
             
         for buildOptions in self.GetBuildOptionsList() :
-            list += buildOptions.GetLibPath()
-        return list
+            libPathList += buildOptions.GetLibPath()
+        return libPathList
         
     def GetLibs( self ) :
-        list = []
+        libList = []
         for childConfig in self.GetDependencyList() :
-            list += childConfig.GetLibs( )        
+            libList += childConfig.GetLibs( )        
             
         for buildOptions in self.GetBuildOptionsList() :
-            list += buildOptions.GetLibs()
-        return list
+            libList += buildOptions.GetLibs()
+        return libList
 
     def GetCompilerFlags( self ) :
-        list = []
+        compilerList = []
         for childConfig in self.GetDependencyList() :
-            list += childConfig.GetCompilerFlags( )        
+            compilerList += childConfig.GetCompilerFlags( )        
             
         for buildOptions in self.GetBuildOptionsList() :
-            list += buildOptions.GetCompilerFlags()
-        return list
+            compilerList += buildOptions.GetCompilerFlags()
+        return compilerList
 
     def GetLinkerFlags( self ) :
-        list = []
+        linkerFlagsList = []
         for childConfig in self.GetDependencyList() :
-            list += childConfig.GetLinkerFlags( )      
+            linkerFlagsList += childConfig.GetLinkerFlags( )      
             
         for buildOptions in self.GetBuildOptionsList() :
-            list += buildOptions.GetLinkerFlags()
-        return list
+            linkerFlagsList += buildOptions.GetLinkerFlags()
+        return linkerFlagsList
         
     def GetPreporcessorDefines( self  ) :
         # Construction des defines pour chaque package
@@ -628,24 +628,24 @@ class CBuildConfig(object) :
         return self.CodePackageSetList
         
     def GetCodePackageListRecursive( self ):
-        list = []
+        codePackagelist = []
         for childConfig in self.GetDependencyList() :
-            list = list + childConfig.GetCodePackageListRecursive( )          
-        list = list + self.GetCodePackageList()
-        return list
+            codePackagelist += childConfig.GetCodePackageListRecursive( )          
+        codePackagelist += self.GetCodePackageList()
+        return codePackagelist
 
     def GetDependencyRecursive( self ):
-        list = self.GetDependencyList()
+        dependencyList = self.GetDependencyList()
         for childConfig in self.GetDependencyList() :
-            list += childConfig.GetDependencyRecursive( )
-        return list
+            dependencyList += childConfig.GetDependencyRecursive( )
+        return dependencyList
         
     def GetDependencyList( self ):
-        list = []
+        dependencyList = []
         for dep in self.DependencyList :
-            list.append( dep.GetBuildConfig() )
+            dependencyList.append( dep.GetBuildConfig() )
             
-        return list
+        return dependencyList
                     
     def Load( self, xmlRoot ) :
         self.Name = xmlRoot.get("Name")

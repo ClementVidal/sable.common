@@ -37,7 +37,8 @@ class CBuilderGCC( CBuilderBase ) :
         return exePath
                     
     def LinkConfig( self ) :
-    
+        CBuilderBase.LinkConfig( self )
+        
         config = self.GetBuildConfig()
 
         cmdLine = ""
@@ -56,29 +57,38 @@ class CBuilderGCC( CBuilderBase ) :
             cmdLine += compiledTarget+" "
         
         # run linker
-        cmdLine = "gcc "+cmdLine
+        compilerPath = "gcc"
+        if config.GetToolChain() == "NaCl" :
+            compilerPath = LibUtils.GetNaclBinPath()
+            if compilerPath == None :
+                print "Compiling NaCl config, but __NACLSDK__ is not set... failed to compile"
+                return False
+            else:
+                compilerPath = os.path.normpath( compilerPath + "/clang" )
+                    
+        cmdLine = compilerPath+" "+cmdLine
         
         pid = subprocess.Popen( cmdLine, shell=True )
         returnCode = pid.wait()
                 
         # in case of successfull link
-        if returnCode == 0:
+        if returnCode == 0 :
             return True
             
         return False
         
     # Build a given target using a given config
     def CompileTarget( self, config, target ) :
-
+        CBuilderBase.CompileTarget( self, config, target )
+        
         compilerPath = "gcc"
         if config.GetToolChain() == "NaCl" :
-            if os.environ.has_key( "__NACLSDK__" ) :
-                naclSDKPath = os.environ.get("__NACLSDK__")
-            else :
+            compilerPath = LibUtils.GetNaclBinPath()
+            if compilerPath == None :
                 print "Compiling NaCl config, but __NACLSDK__ is not set... failed to compile"
                 return False
-
-            compilerPath = os.path.normpath( naclSDKPath + "/pepper_31/toolchain/linux_pnacl/host_x86_32/bin/clang++" )
+            else:
+                compilerPath = os.path.normpath( compilerPath + "/clang" )
            
         # Build command line
         cmdLine = compilerPath
@@ -97,7 +107,7 @@ class CBuilderGCC( CBuilderBase ) :
         for includePath in config.GetIncludePath( ) :
             cmdLine += "\"-I"+includePath+"\" "
 
-        LibLog.Info( cmdLine )
+        #LibLog.Info( cmdLine )
 
         # run compiler
 

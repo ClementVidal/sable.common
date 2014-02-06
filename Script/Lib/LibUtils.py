@@ -92,8 +92,14 @@ def SafeMakeDir( dirName ) :
         else:
             done =True
 
-
-
+def GetNaclBinPath():
+    if os.environ.has_key( "__NACLSDK__" ) :
+        naclSDKPath = os.environ.get("__NACLSDK__")
+        return os.path.normpath( naclSDKPath + "/pepper_31/toolchain/linux_pnacl/host_x86_32/bin/" )
+    
+    return None
+            
+            
 def DownloadHTTPFile( fileUrl, localFilePath ) :
     if localFilePath == None :
         localFilePath = os.path.basename( fileUrl )

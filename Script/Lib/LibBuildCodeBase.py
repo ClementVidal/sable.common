@@ -1,8 +1,5 @@
 import os
-import sys
 import shutil
-import subprocess
-import tempfile
 import hashlib
 import pickle
 
@@ -38,8 +35,8 @@ class CBuilderBase(object) :
         # restore hash database from file
         filePath = self.GetHashDataBaseFilePath()
         if os.path.exists( filePath ):
-            file = open( filePath,'r'  )
-            self.HashDataBase = pickle.load( file )
+            hashFile = open( filePath,'r'  )
+            self.HashDataBase = pickle.load( hashFile )
             if self.HashDataBase == None :
                 self.HashDataBase = {}
         
@@ -53,8 +50,8 @@ class CBuilderBase(object) :
         
         #Dump HashDataBase to file
         filePath = self.GetHashDataBaseFilePath() 
-        file = open( filePath,'w' )
-        pickle.dump( self.HashDataBase, file )
+        hashFile = open( filePath,'w' )
+        pickle.dump( self.HashDataBase, hashFile )
         
  
     # hash the content of a file and return it's checksum
@@ -62,10 +59,10 @@ class CBuilderBase(object) :
         if os.path.exists( filePath ) == False :
             return 0
             
-        file = open( filePath, "r" )
+        hashFile = open( filePath, "r" )
         m = hashlib.md5()
-        m.update( file.read() )
-        file.close()
+        m.update( hashFile.read() )
+        hashFile.close()
         return m.digest()
      
     # return the path to the hash database file
@@ -77,6 +74,7 @@ class CBuilderBase(object) :
         return None
                 
     def LinkConfig( self ) :
+        LibLog.Info( "Linking "+self.GetBuildConfig().GetName() )
         return True 
         
     def GetBinFileList( self ) :
@@ -89,6 +87,9 @@ class CBuilderBase(object) :
             srcFilePath = os.path.abspath( self.GetBuildConfig().GetBuildDir() +"/" + binFile)
             if os.path.exists( srcFilePath ): 
                 shutil.copy( srcFilePath, self.GetBuildConfig().GetBinDir() )
+                os.remove( srcFilePath )
+                dstFilePath = os.path.abspath( self.GetBuildConfig().GetBinDir() +"/" + binFile)
+                LibLog.Info( "Deploying "+self.GetBuildConfig().GetName()+" to: "+dstFilePath)
         return True
         
     def CleanBinFiles( self ) :
@@ -99,6 +100,7 @@ class CBuilderBase(object) :
             if os.path.exists( filePath ) :
                 os.remove( filePath )
         return True
+    
         
     def CleanHashDataBaseFile( self ) :
         if os.path.exists( self.GetHashDataBaseFilePath() ) == True:
@@ -106,6 +108,7 @@ class CBuilderBase(object) :
             
     # Build a given target using a given config
     def CompileTarget( self, config, target ) :
+        LibLog.Info( "Compiling: "+target.GetPath() )
         return False 
         
     # check if a package is up to date:
@@ -128,13 +131,13 @@ class CBuilderBase(object) :
         
     # return a list of all the compiled file representing this target
     def GetCompiledTargetPathList( self, config ) :
-        list = []
+        targetList = []
 
         for package in self.BuildConfig.GetCodePackageListRecursive() :
             for buildTarget in package.GetBuildTargetList( self.BuildConfig ) :
-                list.append( self.GetCompiledTargetPath( buildTarget ) )
+                targetList.append( self.GetCompiledTargetPath( buildTarget ) )
          
-        return list
+        return targetList
         
     def GetBuildConfig( self ) :
         return self.BuildConfig
@@ -171,7 +174,6 @@ class CBuilderBase(object) :
         return compileOk        
 
     def CleanConfig( self, config ) :
-    
         #Remove all targets
         for target in config.GetBuildTargetList( ):
             compiledtargetPath = self.GetCompiledTargetPath( target )
@@ -185,7 +187,7 @@ class CBuilderBase(object) :
             if os.path.exists( filePath ) :
                 os.remove( filePath )
             
-    def CleanConfigRecursive( self, config ) :
+    def CleanConfigRecursive( self, config ) :        
         self.CleanConfig( config )
         
         for childConfig in config.GetDependencyList() :
@@ -194,20 +196,16 @@ class CBuilderBase(object) :
     # main entry point to build and link a specific config
     def Build( self ):
         compileOk = True
-        
-        LibLog.Info( "Compiling "+self.GetBuildConfig().GetName() )
         if self.CompileDependency( self.GetBuildConfig() ) == False :
             compileOk = False
         if self.CompileConfig( self.GetBuildConfig() ) == False :
             compileOk = False     
 
         if compileOk == True :
-            LibLog.Info( "Linking "+self.GetBuildConfig().GetName() )
             if self.LinkConfig( ) == True :
-                LibLog.Info( "Deploying "+self.GetBuildConfig().GetName() )
                 self.DeployBinFiles( )
         
-    def Clean( self ) :
+    def Clean( self ) :        
         LibLog.Info( "Cleaning "+self.GetBuildConfig().GetName() )
         self.CleanConfigRecursive( self.GetBuildConfig() )
         self.CleanBinFiles( )

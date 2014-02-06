@@ -98,7 +98,8 @@ class CBuilderMSVC( CBuilderBase ) :
         returnCode = pid.wait()
         
     def LinkConfig( self ) :
-    
+        CBuilderBase.LinkConfig( self )
+        
         config = self.GetBuildConfig()
             
         cmdLine = ""

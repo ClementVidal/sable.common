@@ -213,10 +213,9 @@ class CGeneratorBuildFile( CGenerator ) :
     
         # If this package is agregated, then prepare a fresh new directory to store the build file
         if package.GetIsAgregated() == True :
-
             
             if len( package.GetBuildTargetList( buildConfig ) ) == 0 :
-                LogLib.Warning("CodePackage: "+self.GetName()+" does not contain any build target in config: "+buildConfig);
+                LibLog.Warning("CodePackage: "+self.GetName()+" does not contain any build target in config: "+buildConfig);
             else :
                 packageFileDir = os.path.dirname( package.GetBuildTargetList( buildConfig )[0].GetPath() )
                 if os.path.exists( packageFileDir ) == False :
@@ -287,7 +286,6 @@ Generate build code
 """
 def GenerateBuildFile( workspace ):
 
-    LibLog.Info( "BuildFile directory: "+workspace.GetBuildFileDir() )
     for wp in workspace.GetDependentWorkspace() :
         g = CGeneratorBuildFile( wp )
         g.Generate()

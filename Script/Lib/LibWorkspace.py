@@ -228,7 +228,7 @@ class CWorkspace(object) :
         for project in self.GetProjectList() :
             for buildConfig in project.GetBuildConfigList() :
                 for childConfig in buildConfig.GetDependencyList() :
-                    if childConfig.GetWorkspace() not in list :
+                    if childConfig.GetWorkspace() not in workspaceList :
                         workspaceList.append( childConfig.GetWorkspace() )
                         
         return workspaceList
@@ -591,6 +591,7 @@ class CBuildConfig(object) :
                 sourceFileList.append( sourceFile )
                 
         return sourceFile
+    
         
     def GetBuildDir( self ) :
         return os.path.normpath( self.GetWorkspace().GetBuildDir() + "/" + self.GetName() )
@@ -654,22 +655,25 @@ class CBuildConfig(object) :
         
         xmlBuildOptionsList = xmlRoot.findall( "BuildOptions" )
         for xmlBuildOptions in xmlBuildOptionsList :
-            buildOptionsName = xmlBuildOptions.get( "Name" )
-            buildOptions = self.GetWorkspace().GetBuildOptions( buildOptionsName )
-            if buildOptions == None :
-                LibLog.Error("Error: The specified build options does not exist: "+buildOptionsName)
-                exit()
-                
-            self.BuildOptionsList.append( buildOptions )
+            buildOptionsNames = xmlBuildOptions.get( "Name" )
+            buildOptionsNames = buildOptionsNames.split()
+            for buildOptionsName in buildOptionsNames :
+                buildOptions = self.GetWorkspace().GetBuildOptions( buildOptionsName )
+                if buildOptions == None :
+                    LibLog.Error("Error: The specified build options does not exist: \""+buildOptionsName+"\"")
+                else:
+                    self.BuildOptionsList.append( buildOptions )
             
         xmlCodePackageSetList = xmlRoot.findall( "CodePackageSet" )
         for xmlCodePackageSet in xmlCodePackageSetList :
-            codePackageSetName = xmlCodePackageSet.get("Name")
-            codePackageSet = self.GetProject().GetCodePackageSet( codePackageSetName )
-            if codePackageSet == None:
-                LibLog.Error( "The specified CodePackageSet does not exists: "+codePackageSetName)
-            else:
-                self.CodePackageSetList.append( codePackageSet )
+            codePackageSetNames = xmlCodePackageSet.get("Name")
+            codePackageSetNames = codePackageSetNames.split()
+            for codePackageSetName in codePackageSetNames :
+                codePackageSet = self.GetProject().GetCodePackageSet( codePackageSetName )
+                if codePackageSet == None:
+                    LibLog.Error( "The specified CodePackageSet does not exists: \""+codePackageSetName+"\"")
+                else:
+                    self.CodePackageSetList.append( codePackageSet )
         
         xmlDependencyList = xmlRoot.findall( "Dependency" )
         for xmlDependency in xmlDependencyList :

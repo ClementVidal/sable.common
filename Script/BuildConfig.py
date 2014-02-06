@@ -76,6 +76,8 @@ def StartFromCommandLine( argv ) :
     parser.add_option(u"-c", u"--clean", help="Clean Project", action="store_true",  dest="Clean")
     parser.add_option(u"-r", u"--rebuild", help="Rebuild Project", action="store_true",  dest="Rebuild")
     parser.add_option(u"-g", u"--generate", help="Generate Build code", action="store_true",  dest="Generate")
+    parser.add_option(u"-v", u"--verbose1", help="Verbose output level 1", action="store_true",  dest="Verbose1")
+    parser.add_option(u"", u"--verbose2", help="Verbose output level 2", action="store_true",  dest="Verbose2")
     (options, args) = parser.parse_args()
     
     if len( args ) != 3 :

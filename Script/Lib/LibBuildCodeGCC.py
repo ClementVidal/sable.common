@@ -30,7 +30,7 @@ class CBuilderGCC( CBuilderBase ) :
                 
     def GetExeName( self ) : 
         config = self.GetBuildConfig() 
-        return config.GetProject().GetName()
+        return config.GetProject().GetName()+".pexe"
         
     def GetExePath( self ) : 
         exePath = os.path.normpath( self.GetBuildConfig().GetBuildDir()+"/"+self.GetExeName() )
@@ -64,10 +64,11 @@ class CBuilderGCC( CBuilderBase ) :
                 print "Compiling NaCl config, but __NACLSDK__ is not set... failed to compile"
                 return False
             else:
-                compilerPath = os.path.normpath( compilerPath + "/clang" )
+                compilerPath = os.path.normpath( compilerPath + "/pnacl-clang++" )
                     
         cmdLine = compilerPath+" "+cmdLine
         
+        sys.stdout.flush()
         pid = subprocess.Popen( cmdLine, shell=True )
         returnCode = pid.wait()
                 
@@ -88,7 +89,7 @@ class CBuilderGCC( CBuilderBase ) :
                 print "Compiling NaCl config, but __NACLSDK__ is not set... failed to compile"
                 return False
             else:
-                compilerPath = os.path.normpath( compilerPath + "/clang" )
+                compilerPath = os.path.normpath( compilerPath + "/pnacl-clang" )
            
         # Build command line
         cmdLine = compilerPath
@@ -107,10 +108,11 @@ class CBuilderGCC( CBuilderBase ) :
         for includePath in config.GetIncludePath( ) :
             cmdLine += "\"-I"+includePath+"\" "
 
-        #LibLog.Info( cmdLine )
+        #LibLog.Info( cmdLine )sys.stdout.flush()
 
         # run compiler
 
+        sys.stdout.flush()
         pid = subprocess.Popen( cmdLine, shell=True )
         returnCode = pid.wait()
         

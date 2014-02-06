@@ -74,7 +74,7 @@ class CBuilderBase(object) :
         return None
                 
     def LinkConfig( self ) :
-        LibLog.Info( "Linking "+self.GetBuildConfig().GetName() )
+        LibLog.Info( "Linking: "+self.GetBuildConfig().GetName() )
         return True 
         
     def GetBinFileList( self ) :
@@ -89,7 +89,7 @@ class CBuilderBase(object) :
                 shutil.copy( srcFilePath, self.GetBuildConfig().GetBinDir() )
                 os.remove( srcFilePath )
                 dstFilePath = os.path.abspath( self.GetBuildConfig().GetBinDir() +"/" + binFile)
-                LibLog.Info( "Deploying "+self.GetBuildConfig().GetName()+" to: "+dstFilePath)
+                LibLog.Info( "Deploying: "+self.GetBuildConfig().GetName()+" to: "+dstFilePath)
         return True
         
     def CleanBinFiles( self ) :
@@ -206,7 +206,7 @@ class CBuilderBase(object) :
                 self.DeployBinFiles( )
         
     def Clean( self ) :        
-        LibLog.Info( "Cleaning "+self.GetBuildConfig().GetName() )
+        LibLog.Info( "Cleaning: "+self.GetBuildConfig().GetName() )
         self.CleanConfigRecursive( self.GetBuildConfig() )
         self.CleanBinFiles( )
         self.CleanHashDataBaseFile( )

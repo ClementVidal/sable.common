@@ -119,10 +119,10 @@ class CGeneratorHeader( CGenerator ) :
             
         guard = self.BuildPreprocessorGuards( path )
             
-        file = open( fileName, "w+t" ) 
-        file.write( u"#ifndef " + guard + u"\n" )
-        file.write( u"#define " + guard + u"\n" )
-        file.write( u"\n" )
+        headerFile = open( fileName, "w+t" ) 
+        headerFile.write( u"#ifndef " + guard + u"\n" )
+        headerFile.write( u"#define " + guard + u"\n" )
+        headerFile.write( u"\n" )
         
         # try to find BuildFileHeader.h 
         # if we find it, store it first in the output file
@@ -130,16 +130,16 @@ class CGeneratorHeader( CGenerator ) :
         for f in self.FileList :
             if f.find( "BuildFileHeader.h" ) != -1 :
                 buildFileHeader = f
-                file.write( u"#include <" + f + u">\n" )
+                headerFile.write( u"#include <" + f + u">\n" )
                 
         # then store all other header
         for f in self.FileList :
             if f != buildFileHeader :
-                file.write( u"#include <" + f + u">\n" )
+                headerFile.write( u"#include <" + f + u">\n" )
             
-        file.write( u"\n" )
-        file.write( u"#endif" )
-        file.close()
+        headerFile.write( u"\n" )
+        headerFile.write( u"#endif" )
+        headerFile.close()
 
 """
 Generator class used to create QT's moc files
@@ -234,17 +234,17 @@ class CGeneratorBuildFile( CGenerator ) :
                 
             headerFileName = os.path.abspath( os.path.join( package.Path, "BuildFileHeader.h" ) )
                 
-            file = open( buildFileName, "w+t" ) 
+            buildHeaderFile = open( buildFileName, "w+t" ) 
 
-            file.write( u"// Auto generated build files\n\n")
+            buildHeaderFile.write( u"// Auto generated build files\n\n")
             if os.path.exists( headerFileName ) == True :
-                file.write( u"#include \"" + headerFileName + "\"\n" )
+                buildHeaderFile.write( u"#include \"" + headerFileName + "\"\n" )
 
-            file.write( u"\n" )
+            buildHeaderFile.write( u"\n" )
             for f in self.FileList :
-                file.write( u"#include \"" + f + "\"\n" )
-            file.write( u"\n" )
-            file.close() 
+                buildHeaderFile.write( u"#include \"" + f + "\"\n" )
+            buildHeaderFile.write( u"\n" )
+            buildHeaderFile.close() 
 
     def BeginDirectory( self, package, buildConfig, path ) :
     
@@ -303,8 +303,8 @@ def GenerateQtMocFile( workspace ):
     
 def FullGenerate():
  
-    list = Workspace.List()
-    for w in list :
+    wpList = LibWorkspace.GetWorkspaceList()
+    for w in wpList :
         GenerateHeader( w ) 
         GenerateBuildCode( w )
     
